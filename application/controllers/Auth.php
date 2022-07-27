@@ -90,12 +90,46 @@ class Auth extends CI_Controller
                 'image' => 'default.jpg',
                 'password' => password_hash($this->input->POST('password1'), PASSWORD_DEFAULT),
                 'role_id' => 2,
-                'is_active' => 1,
+                'is_active' => 0,
                 'date_created' => time()
             ];
-            $this->db->insert('user', $data);
+            // $this->db->insert('user', $data);
+
+            $this->_sendEmail();
+
+
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Congratulation! Your account has been created. Please Login</div>');
             redirect('auth');
+        }
+    }
+
+    private function _sendEmail()
+    {
+        $config = [
+            'protocol' => 'smtp',
+            'smtp_host' => 'smtp.mailtrap.io',
+            'smtp_port' => 2525,
+            'smtp_user' => '8e160b9a01323c',
+            'smtp_pass' => 'c74e5c261a8435',
+            'crlf' => "\r\n",
+            'newline' => "\r\n"
+        ];
+
+        $this->load->library('email', $config);
+        $this->email->initialize($config);
+
+        $this->email->from('hahakankuro132@gmail.com', 'Kankuro Vim');
+        $this->email->to('kankurovim@gmail.com');
+        $this->email->subject('Testing');
+        $this->email->message('Hello!');
+
+        if ($this->email->send()) {
+            return true;
+            echo "mail send";
+        } else {
+            echo $this->email->print_debugger();
+            echo "<h1 style='font-size: 60px; ' >mail not send</h1>";
+            die;
         }
     }
 
